@@ -24,6 +24,9 @@ class InputManager(object):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._managerList['Game'].stop()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    self._managerList['Game'].stop()
             for eventHandler in eventHandlers:
                 eventHandler(event)
 

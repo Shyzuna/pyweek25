@@ -1,0 +1,15 @@
+{
+  "dialogs": [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis euismod rhoncus porttitor.\nDuis sodales tempus velit. Nullam gravida commodo mi, non suscipit nisl aliquam ut. In laoreet enim felis, sit amet dapibus erat gravida vel. Phasellus rhoncus lorem id auctor volutpat. Donec porta mollis lectus, sed efficitur nisi viverra nec. Pellentesque ante massa, consequat eget purus et, auctor condimentum metus. Curabitur dictum, enim sit amet ullamcorper viverra, metus leo pretium sapien, ac tristique leo turpis et turpis. Nunc fermentum viverra vulputate. Donec fermentum velit at diam luctus tempus. In sed molestie ligula, at efficitur felis. Duis interdum tortor vitae finibus molestie. Morbi porta, nisi ut rhoncus porttitor, mi purus interdum elit, at sagittis purus dolor eu purus. Maecenas eu arcu eu est ultricies rutrum a eu ipsum. In sagittis orci eu turpis luctus, lacinia malesuada ligula aliquet.",
+    "Cras dignissim gravida velit, nec dapibus turpis auctor id. Mauris ultrices ligula ipsum.\nCras lectus erat, tempus ut sem sed, hendrerit egestas nisi.",
+    "Ut cursus felis vel nisl rutrum, sit amet ultrices massa mattis. Quisque consectetur egestas quam, sit amet pretium erat cursus sit amet. Nulla commodo faucibus est, eu vestibulum mi. Proin tortor lorem, convallis commodo turpis non, eleifend vulputate felis. Ut sed maximus enim. Proin facilisis dictum augue, at luctus magna. Proin fermentum tellus eu iaculis auctor. Cras tincidunt, erat nec tristique ultrices, turpis tortor lobortis lectus, sit amet vehicula arcu est et eros. Sed imperdiet semper justo vel ultricies. "
+  ],
+  "actions": [
+    {"type": "changeBg", "arg": "test", "at": 0},
+    {"type": "changeBg", "arg": "test2", "at": 2}
+  ],
+  "resources": [
+    {"id": "test", "type": "image", "name": "test.png"},
+    {"id": "test2", "type": "image", "name": "test2.png"}
+  ]
+}

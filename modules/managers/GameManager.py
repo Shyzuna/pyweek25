@@ -20,6 +20,7 @@ from modules.managers.LangManager import myLangManager
 
 from modules.widgets.menu.MainMenu import MainMenu
 from modules.widgets.menu.OptionsMenu import OptionsMenu
+from modules.widgets.cinematic.FadingTextOnBg import FadingTextOnBg
 
 
 class GameManager(object):
@@ -65,6 +66,7 @@ class GameManager(object):
 
         self._scenes['mainMenu'] = MainMenu(self)
         self._scenes['optionsMenu'] = OptionsMenu(self)
+        self._scenes['intro'] = FadingTextOnBg('intro', self)
         self._currentScene = 'mainMenu'
 
         self._init = True
@@ -73,7 +75,7 @@ class GameManager(object):
         if scene in self._scenes.keys():
             self._previousScene = self._currentScene
             self._currentScene = scene
-            self._scenes[self._currentScene].update()
+            self._scenes[self._currentScene].refresh()
         else:
             print("[GameManager] - Cannot swap to an unknown scene : " + scene)
 
@@ -122,8 +124,9 @@ class GameManager(object):
         while self._running:
             self._clock.tick(settings.FPS)
             self.deltaTime = self._clock.get_time()
+            self._scenes[self._currentScene].update()
             myInputManager.handleEvents([self._scenes[self._currentScene].processEvent])
-            myDisplayManager.render([self.renderFps, self._scenes[self._currentScene].render])
+            myDisplayManager.render([self._scenes[self._currentScene].render, self.renderFps])
 
 
 myGameManager = GameManager()

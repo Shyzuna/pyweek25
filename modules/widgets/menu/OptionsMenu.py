@@ -76,8 +76,11 @@ class OptionsMenu(object):
                 self._buttons[0].setPosition((positionL, positionT))
             index += 1
 
-    def update(self):
+    def refresh(self):
         self.createButtons()
+
+    def update(self):
+        pass
 
     def render(self, deltaTime):
         titlePosition = (myDisplayManager.getCenterPosition(self._titleSurface.get_size())[0], self._margin)

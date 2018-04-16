@@ -36,5 +36,8 @@ class GuiManager(object):
         label = self.createText(text, font, size, color)
         self._managerList['Display'].display(label, position)
 
+    def estimateSize(self, text, font, size):
+        fontFullName = self.loadFont(font, size)
+        return self._fontList[fontFullName].size(text)
 
 myGuiManager = GuiManager()

@@ -4,11 +4,11 @@ Desc: Handle language modification for dialogs and labels
 Creation: 16/04/18
 Last Mod: 16/04/18
 TODO:
+    * Find better format for dialogs ?
 """
 # coding=utf-8
 
 import json
-import codecs
 import os
 import settings.settings as settings
 
@@ -24,6 +24,7 @@ class LangManager(object):
         self._init = False
         self._managerList = None
         self._labels = {}
+        self._dialogsList = []
         self._dialogs = {}
         self._currentLang = None
         self._langList = []
@@ -34,6 +35,9 @@ class LangManager(object):
         :return: Nothing
         """
         self._managerList = managerList
+        self._dialogsList = [
+            'intro'
+        ]
         self._currentLang = settings.DEFAULT_LANG
         self._langList = settings.LANG_LIST
         for lang in settings.LANG_LIST:
@@ -44,8 +48,18 @@ class LangManager(object):
                     self._labels[lang] = langsData
             except Exception as e:
                 print("[LangManager] - Could'nt load language : " + lang)
-                raise e
                 print(e)
+
+            self._dialogs[lang] = {}
+            for dialog in self._dialogsList:
+                try:
+                    with open(os.path.join(settings.DIALOGS_PATH, lang, dialog + '.json'), 'rb') as file:
+                        data = file.read().decode('utf-8')
+                        dialogData = json.loads(data)
+                        self._dialogs[lang][dialog] = dialogData
+                except Exception as e:
+                    print("[LangManager] - Could'nt load dialog : " + dialog)
+                    print(e)
 
     def getLabel(self, path):
         elements = path.split('.')
@@ -56,6 +70,13 @@ class LangManager(object):
                 return None
             currentLabel = currentLabel[elem]
         return currentLabel
+
+    def getDialog(self, dialog):
+        if dialog in self._dialogsList:
+            return self._dialogs[self._currentLang][dialog]
+        else:
+            print('[LangManager] - Unknown dialog : ' + dialog)
+            return None
 
     def getCurrentLang(self):
         return self._currentLang
