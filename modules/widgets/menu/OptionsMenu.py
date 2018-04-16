@@ -1,9 +1,10 @@
 """
-Title: Main menu
-Desc: Display and handle events for mainMenu
+Title: Options menu
+Desc: Display and handle events for optionsMenu
 Creation: 16/04/18
 Last Mod: 16/04/18
 TODO:
+    * Could merge with MainMenu
 """
 
 # coding=utf-8
@@ -18,31 +19,43 @@ from modules.managers.DisplayManager import myDisplayManager
 from modules.managers.GuiManager import myGuiManager
 
 
-class MainMenu(object):
+class OptionsMenu(object):
     """
-    MainMenu
+    OptionsMenu
     """
     def __init__(self, myGameManager):
         """
         Create basic button and state for the menu
         """
         self._myGameManager = myGameManager
-        self._buttonsLabels = ['menu.play', 'menu.options', 'menu.credits', 'menu.exit']
-        self._titleSurface = myGuiManager.createText(settings.TITLE, 'Allegro', 38, colors.BLACK)
+        self._buttonsLabels = ['options.screen-size', 'options.fullscreen', 'options.language', 'options.return']
+        self._titleSurface = myGuiManager.createText(myLangManager.getLabel('menu.options'),
+                                                     'Allegro', 38, colors.BLACK)
         self._buttons = []
         self._selectedButton = 0
         self._margin = 15.0
         self.createButtons()
 
+    def createOptionsLabel(self, label):
+        value = myLangManager.getLabel(label)
+        if label == 'options.screen-size':
+            value += ' : ' + str(myDisplayManager.getSize()[0]) + 'x' + str(myDisplayManager.getSize()[1])
+        elif label == 'options.fullscreen':
+            value += ' : ' + ('On' if myDisplayManager.isFullscreen() else 'Off')
+        elif label == 'options.language':
+            value += ' : ' + myLangManager.getCurrentLang()
+        return value
+
     def buttonsHandler(self):
         if self._selectedButton == 0:
-            pass
+            myDisplayManager.nextResolution()
         elif self._selectedButton == 1:
-            self._myGameManager.changeCurrentScene('optionsMenu')
+            myDisplayManager.toggleFullScreen()
         elif self._selectedButton == 2:
-            pass
+            myLangManager.nextLanguage()
         elif self._selectedButton == 3:
-            self._myGameManager.stop()
+            self._myGameManager.previousScene()
+        self.createButtons()
 
     def createButtons(self):
         self._buttons.clear()
@@ -54,7 +67,7 @@ class MainMenu(object):
             if index > 0:
                 positionT += self._buttons[index-1].getSizes()[1] + self._margin
             self._buttons.append(
-                TextButton(myLangManager.getLabel(label), 'Allegro', 32, colors.BLACK,
+                TextButton(self.createOptionsLabel(label), 'Allegro', 32, colors.BLACK,
                            (positionL, positionT), self._selectedButton == index)
             )
             if index == 0:

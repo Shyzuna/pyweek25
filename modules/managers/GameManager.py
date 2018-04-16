@@ -7,6 +7,8 @@ TODO:
     * Logging policy ? => not worth ?
 """
 
+# coding=utf-8
+
 import pygame
 import settings.settings as settings
 import constants.colors as colors
@@ -17,6 +19,7 @@ from modules.managers.DisplayManager import myDisplayManager
 from modules.managers.LangManager import myLangManager
 
 from modules.widgets.menu.MainMenu import MainMenu
+from modules.widgets.menu.OptionsMenu import OptionsMenu
 
 
 class GameManager(object):
@@ -41,6 +44,7 @@ class GameManager(object):
 
         self._scenes = {}
         self._currentScene = None
+        self._previousScene = None
 
         self.deltaTime = 0
 
@@ -59,10 +63,22 @@ class GameManager(object):
             if name not in ['Game', 'Display']:
                 manager.init(self._managerList)
 
-        self._scenes['mainMenu'] = MainMenu()
+        self._scenes['mainMenu'] = MainMenu(self)
+        self._scenes['optionsMenu'] = OptionsMenu(self)
         self._currentScene = 'mainMenu'
 
         self._init = True
+
+    def changeCurrentScene(self, scene):
+        if scene in self._scenes.keys():
+            self._previousScene = self._currentScene
+            self._currentScene = scene
+            self._scenes[self._currentScene].update()
+        else:
+            print("[GameManager] - Cannot swap to an unknown scene : " + scene)
+
+    def previousScene(self):
+        self.changeCurrentScene(self._previousScene)
 
     def start(self):
         """

@@ -6,6 +6,8 @@ Last Mod: 15/04/18
 TODO:
 """
 
+# coding=utf-8
+
 import pygame
 
 

@@ -8,6 +8,9 @@ TODO:
     * Add anchor ?
     * Parenting positioning ?
 """
+
+# coding=utf-8
+
 import pygame
 import os
 
@@ -30,6 +33,7 @@ class TextButton(object):
         :param position:
         """
         self._textSurface = myGuiManager.createText(text, font, size, color)
+        print(text)
         self._buttonImg = pygame.image.load(os.path.join(settings.IMAGE_PATH, 'button.png'))
         self._position = position
 

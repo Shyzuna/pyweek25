@@ -4,5 +4,11 @@
     "options": "Options",
     "exit": "Exit",
     "credits": "Credits"
+  },
+  "options": {
+    "screen-size": "Screen resolution",
+    "fullscreen": "FullScreen",
+    "language": "Language",
+    "return": "Return"
   }
 }
