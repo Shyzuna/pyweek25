@@ -2,17 +2,21 @@
 Title: GameManager
 Desc: Main classes containing all the basics for game execution
 Creation: 15/04/18
-Last Mod: 15/04/18
+Last Mod: 16/04/18
 TODO:
-    * May split with DisplayManager
-    * Is a manger list to propagate is needed
+    * Logging policy ? => not worth ?
 """
 
 import pygame
 import settings.settings as settings
+import constants.colors as colors
 
 from modules.managers.InputManager import myInputManager
 from modules.managers.GuiManager import myGuiManager
+from modules.managers.DisplayManager import myDisplayManager
+from modules.managers.LangManager import myLangManager
+
+from modules.widgets.menu.MainMenu import MainMenu
 
 
 class GameManager(object):
@@ -25,14 +29,18 @@ class GameManager(object):
         """
         self._running = True
         self._init = False
-        self._display = None
         self._clock = None
         self._debug = settings.DEBUG
         self._managerList = {
             'Game': self,
+            'Display': myDisplayManager,
             'Input': myInputManager,
-            'Gui': myGuiManager
+            'Gui': myGuiManager,
+            'Lang': myLangManager
         }
+
+        self._scenes = {}
+        self._currentScene = None
 
         self.deltaTime = 0
 
@@ -42,13 +50,17 @@ class GameManager(object):
         :return: Nothing
         """
         pygame.init()
-        self._display = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT), pygame.HWSURFACE)
         self._clock = pygame.time.Clock()
         self._running = True
 
-        for manager in self._managerList.values():
-            if manager != self:
+        self._managerList['Display'].init(self._managerList)
+
+        for (name, manager) in self._managerList.items():
+            if name not in ['Game', 'Display']:
                 manager.init(self._managerList)
+
+        self._scenes['mainMenu'] = MainMenu()
+        self._currentScene = 'mainMenu'
 
         self._init = True
 
@@ -77,18 +89,14 @@ class GameManager(object):
         """
         pygame.quit()
 
-    def render(self):
+    def renderFps(self, deltaTime):
         """
-        Render elements in scene (Clean/Render/Flip)
+        Render FPS counter
+        :param deltaTime: deltaTime
         :return: Nothing
         """
-        self._display.fill((0, 0, 0))
         if self._debug:
-            self._managerList['Gui'].writeText(self._clock.get_fps(), 'Arial', (255, 0, 0), (0, 0))
-        pygame.display.flip()
-
-    def display(self, elem, pos):
-        self._display.blit(elem,pos)
+            self._managerList['Gui'].writeText(self._clock.get_fps(), 'Arial', 15, colors.RED, (0, 0))
 
     def mainLoop(self):
         """
@@ -98,8 +106,8 @@ class GameManager(object):
         while self._running:
             self._clock.tick(settings.FPS)
             self.deltaTime = self._clock.get_time()
-            myInputManager.handleEvents()
-            self.render()
+            myInputManager.handleEvents([self._scenes[self._currentScene].processEvent])
+            myDisplayManager.render([self.renderFps, self._scenes[self._currentScene].render])
 
 
 myGameManager = GameManager()

@@ -17,12 +17,22 @@ class GuiManager(object):
 
     def init(self, managerList):
         self._managerList = managerList
-        self._fontList['Arial'] = pygame.font.SysFont('Arial', 15)
         self._init = True
 
-    def writeText(self, text, font, color, position):
-        label = self._fontList[font].render(str(text), 1, color)
-        self._managerList['Game'].display(label, position)
+    def loadFont(self, name, size, sysFont=True):
+        fontFullName = name + '-' + str(size)
+        if fontFullName not in self._fontList.keys():
+            if sysFont:
+                self._fontList[fontFullName] = pygame.font.SysFont(name, size)
+        return fontFullName
+
+    def createText(self, text, font, size, color):
+        fontFullName = self.loadFont(font, size)
+        return self._fontList[fontFullName].render(str(text), 1, color)
+
+    def writeText(self, text, font, size, color, position):
+        label = self.createText(text, font, size, color)
+        self._managerList['Display'].display(label, position)
 
 
 myGuiManager = GuiManager()

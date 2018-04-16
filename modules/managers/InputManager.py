@@ -2,7 +2,7 @@
 Title: InputManager
 Desc: Handles input from player
 Creation: 15/04/18
-Last Mod: 15/04/18
+Last Mod: 16/04/18
 TODO:
 """
 
@@ -18,10 +18,12 @@ class InputManager(object):
         self._managerList = managerList
         self._init = True
 
-    def handleEvents(self):
+    def handleEvents(self, eventHandlers):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._managerList['Game'].stop()
+            for eventHandler in eventHandlers:
+                eventHandler(event)
 
 
 myInputManager = InputManager()
