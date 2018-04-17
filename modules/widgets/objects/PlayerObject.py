@@ -21,7 +21,7 @@ from modules.managers.DisplayManager import myDisplayManager
 
 
 class PlayerObject(object):
-    def __init__(self, mapObject):
+    def __init__(self, mapObject, scrollWindow):
         self._playerSurface = pygame.image.load(os.path.join(settings.OBJECTS_PATH, 'player.png')).convert_alpha()
         self._mapObject = mapObject
         self._position = (100, 100)
@@ -31,20 +31,21 @@ class PlayerObject(object):
             pygame.K_LEFT: False,
             pygame.K_RIGHT: False
         }
-        self._speed = 10
+        self._speed = 20
         self._orientation = 0
+        self._scrollWindow = scrollWindow
 
     def render(self, deltaTime):
         surface = self._playerSurface
-        rect = surface.get_rect()
+        """rect = surface.get_rect()
         if self._orientation != 0:
             surface = pygame.transform.rotate(surface, self._orientation)
             newRect = surface.get_rect()
             newRect.center = rect.center
             rect = newRect
         rect.left = self._position[0]
-        rect.top = self._position[1]
-        myDisplayManager.display(surface, rect)
+        rect.top = self._position[1]"""
+        myDisplayManager.display(surface, self._position)
 
     def computeOrientation(self):
         posX, posY = pygame.mouse.get_pos()
@@ -57,18 +58,25 @@ class PlayerObject(object):
     def update(self, deltaTime):
         newX, newY = self._position
         currentSpeed = deltaTime * self._speed / 100.0
-        for direction,value in self._keyDirection.items():
+        directionX = 0
+        directionY = 0
+        for direction, value in self._keyDirection.items():
             if value:
                 if direction in [pygame.K_RIGHT, pygame.K_LEFT]:
-                    newX += currentSpeed * (1 if direction == pygame.K_RIGHT else -1)
+                    directionX = currentSpeed * (1 if direction == pygame.K_RIGHT else -1)
                 if direction in [pygame.K_UP, pygame.K_DOWN]:
-                    newY += currentSpeed * (1 if direction == pygame.K_DOWN else -1)
-        if (newX, newY) != self._position:
+                    directionY = currentSpeed * (1 if direction == pygame.K_DOWN else -1)
+        if directionX != 0 or directionY != 0:
+            newX += directionX
+            newY += directionY
             rect = self._playerSurface.get_rect()
             rect.top = newY
             rect.left = newX
             if not self._mapObject.checkCollision(rect):
-                self._position = (newX, newY)
+                xScroll, yScroll = self._scrollWindow.checkScrolling(self._position[0], self._position[1],
+                                                                     (directionX, directionY))
+                self._position = (newX if not xScroll else self._position[0],
+                                  newY if not yScroll else self._position[1])
 
         self.computeOrientation()
 

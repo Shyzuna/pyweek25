@@ -63,6 +63,7 @@ class MapManager(object):
     def loadMap(self, name):
         currentMap = MapObject(name)
         width = 0
+        maxWidth = 0
         height = 0
         mapData = []
         currentLine = []
@@ -81,7 +82,9 @@ class MapManager(object):
                         currentLine = []
                     else:
                         break
-                currentMap.load((width, height), mapData)
+                    if width > maxWidth:
+                        maxWidth = width
+                currentMap.load((maxWidth, height), mapData)
                 self._mapObjects[name] = currentMap
         except Exception as e:
             print("[MapManager] - Error while loading map : " + name)

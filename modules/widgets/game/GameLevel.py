@@ -12,6 +12,7 @@ import pygame
 import constants.colors as colors
 
 from modules.widgets.objects.PlayerObject import PlayerObject
+from modules.widgets.objects.ScrollWindow import ScrollWindow
 
 from modules.managers.MapManager import myMapManager
 from modules.managers.DisplayManager import myDisplayManager
@@ -30,13 +31,17 @@ class GameLevel(object):
         self._background = pygame.Surface(myDisplayManager.getSize())
         self._background.fill(colors.BLACK)
         self._mapObject.setTileSet(self._tilesData, self._tileSize)
+        self._mapObject.setWalkingTiles(['0', '2'])
 
-        self._player = PlayerObject(self._mapObject)
+        self._scrollWindow = ScrollWindow(self._mapObject)
+        self._mapObject.setScrollWindow(self._scrollWindow)
+        self._player = PlayerObject(self._mapObject, self._scrollWindow)
 
     def render(self, deltaTime):
         myDisplayManager.display(self._background, (0, 0))
         self._mapObject.render(deltaTime)
         self._player.render(deltaTime)
+        self._scrollWindow.render(deltaTime)
 
     def update(self):
         self._player.update(self._myGameManager.deltaTime)

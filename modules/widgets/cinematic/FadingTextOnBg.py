@@ -37,8 +37,9 @@ class FadingTextOnBg(object):
         self._height = 0.6 * myDisplayManager.getSize()[1]
 
         self._padding = 20
-        self._dialogBackground = pygame.Surface((self._width + (2 * self._padding), self._height + (2 * self._padding)), pygame.SRCALPHA)
-        self._dialogBackground.fill(colors.WHITE) # (117, 117, 117, 180)
+        self._dialogBackground = pygame.Surface((self._width + (2 * self._padding), self._height + (2 * self._padding)),
+                                                pygame.SRCALPHA)
+        self._dialogBackground.fill((117, 117, 117, 180))
 
         self._position = myDisplayManager.getCenterPosition(self._dialogBackground.get_size())
 
