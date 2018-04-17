@@ -28,9 +28,9 @@ class GuiManager(object):
                 self._fontList[fontFullName] = pygame.font.SysFont(name, size)
         return fontFullName
 
-    def createText(self, text, font, size, color):
+    def createText(self, text, font, size, color, antiAliased=True):
         fontFullName = self.loadFont(font, size)
-        return self._fontList[fontFullName].render(str(text), 1, color)
+        return self._fontList[fontFullName].render(str(text), antiAliased, color)
 
     def writeText(self, text, font, size, color, position):
         label = self.createText(text, font, size, color)

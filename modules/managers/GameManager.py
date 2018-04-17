@@ -17,10 +17,12 @@ from modules.managers.InputManager import myInputManager
 from modules.managers.GuiManager import myGuiManager
 from modules.managers.DisplayManager import myDisplayManager
 from modules.managers.LangManager import myLangManager
+from modules.managers.MapManager import myMapManager
 
 from modules.widgets.menu.MainMenu import MainMenu
 from modules.widgets.menu.OptionsMenu import OptionsMenu
 from modules.widgets.cinematic.FadingTextOnBg import FadingTextOnBg
+from modules.widgets.game.GameLevel import GameLevel
 
 
 class GameManager(object):
@@ -40,7 +42,8 @@ class GameManager(object):
             'Display': myDisplayManager,
             'Input': myInputManager,
             'Gui': myGuiManager,
-            'Lang': myLangManager
+            'Lang': myLangManager,
+            'Map': myMapManager
         }
 
         self._scenes = {}
@@ -67,6 +70,7 @@ class GameManager(object):
         self._scenes['mainMenu'] = MainMenu(self)
         self._scenes['optionsMenu'] = OptionsMenu(self)
         self._scenes['intro'] = FadingTextOnBg('intro', self)
+        self._scenes['labo'] = GameLevel('labo', self)
         self._currentScene = 'mainMenu'
 
         self._init = True

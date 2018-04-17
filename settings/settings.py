@@ -10,9 +10,8 @@ TODO: /
 
 import os
 
-
 # Display:
-DEFAULT_RESOLUTION = 0
+DEFAULT_RESOLUTION = 2
 FPS = 60
 FULL_SCREEN = False
 AVAILABLE_RESOLUTION = [
@@ -26,6 +25,9 @@ AVAILABLE_RESOLUTION = [
 IMAGE_PATH = os.path.join('data', 'images')
 LANGS_PATH = os.path.join('data', 'langs')
 DIALOGS_PATH = os.path.join('data', 'dialogs')
+MAPS_PATH = os.path.join('data', 'maps')
+TILES_PATH = os.path.join(IMAGE_PATH, 'tiles')
+OBJECTS_PATH = os.path.join(IMAGE_PATH, 'objects')
 
 # Lang
 DEFAULT_LANG = 'en'
