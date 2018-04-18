@@ -18,6 +18,7 @@ from modules.managers.GuiManager import myGuiManager
 from modules.managers.DisplayManager import myDisplayManager
 from modules.managers.LangManager import myLangManager
 from modules.managers.MapManager import myMapManager
+from modules.managers.ResourceManager import myResourceManager
 
 from modules.widgets.menu.MainMenu import MainMenu
 from modules.widgets.menu.OptionsMenu import OptionsMenu
@@ -43,7 +44,8 @@ class GameManager(object):
             'Input': myInputManager,
             'Gui': myGuiManager,
             'Lang': myLangManager,
-            'Map': myMapManager
+            'Map': myMapManager,
+            'Resource': myResourceManager
         }
 
         self._scenes = {}
@@ -62,9 +64,10 @@ class GameManager(object):
         self._running = True
 
         self._managerList['Display'].init(self._managerList)
+        self._managerList['Resource'].init(self._managerList)
 
         for (name, manager) in self._managerList.items():
-            if name not in ['Game', 'Display']:
+            if name not in ['Game', 'Display', 'Resource']:
                 manager.init(self._managerList)
 
         self._scenes['mainMenu'] = MainMenu(self)
@@ -80,6 +83,7 @@ class GameManager(object):
             self._previousScene = self._currentScene
             self._currentScene = scene
             self._scenes[self._currentScene].refresh()
+            myGuiManager.refresh()
         else:
             print("[GameManager] - Cannot swap to an unknown scene : " + scene)
 
@@ -130,7 +134,7 @@ class GameManager(object):
             self.deltaTime = self._clock.get_time()
             self._scenes[self._currentScene].update()
             myInputManager.handleEvents([self._scenes[self._currentScene].processEvent])
-            myDisplayManager.render([self._scenes[self._currentScene].render, self.renderFps])
+            myDisplayManager.render([self._scenes[self._currentScene].render, myGuiManager.render, self.renderFps])
 
 
 myGameManager = GameManager()

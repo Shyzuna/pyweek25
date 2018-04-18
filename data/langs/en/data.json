@@ -10,5 +10,11 @@
     "fullscreen": "FullScreen",
     "language": "Language",
     "return": "Return"
+  },
+  "interaction": {
+    "door_open": "Press {ACTION_INTERACT} to open the door",
+    "door_close": "Press {ACTION_INTERACT} to close the door",
+    "locked_nokey": "Locked door",
+    "locked_key": "Press {ACTION_INTERACT} to unlock the door"
   }
 }

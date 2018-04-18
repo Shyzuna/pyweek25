@@ -2,7 +2,7 @@
 Title: Main menu
 Desc: Display and handle events for mainMenu
 Creation: 16/04/18
-Last Mod: 16/04/18
+Last Mod: 18/04/18
 TODO:
 """
 
@@ -36,7 +36,7 @@ class MainMenu(object):
 
     def buttonsHandler(self):
         if self._selectedButton == 0:
-            self._myGameManager.changeCurrentScene('intro')
+            self._myGameManager.changeCurrentScene('labo')
         elif self._selectedButton == 1:
             self._myGameManager.changeCurrentScene('optionsMenu')
         elif self._selectedButton == 2:

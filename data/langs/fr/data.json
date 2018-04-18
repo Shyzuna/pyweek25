@@ -10,5 +10,11 @@
     "fullscreen": "Pleine écran",
     "language": "Langage",
     "return": "Retour"
+  },
+  "interaction": {
+    "door_open": "Appuyer sur {ACTION_INTERACT} pour ouvrir la porte",
+    "door_close": "Appuyer sur {ACTION_INTERACT} pour fermer la porte",
+    "locked_nokey": "Porte verouillée",
+    "locked_key": "Appuyer sur {ACTION_INTERACT} pour déverouiller la porte"
   }
 }

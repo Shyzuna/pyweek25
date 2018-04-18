@@ -16,3 +16,6 @@ def length(v):
 
 def angle(v1, v2):
     return math.degrees(math.acos(dotProduct(v1, v2) / (length(v1) * length(v2))))
+
+def dist(v1, v2):
+    return math.sqrt(math.pow(v1[0] - v2[0], 2) + math.pow(v1[1] - v2[1], 2))

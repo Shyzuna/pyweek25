@@ -1,0 +1,85 @@
+{
+  "objects": [
+    {
+      "id": "door1",
+      "type": "door",
+      "position": [
+        33,
+        8
+      ],
+      "rotation": 90,
+      "args": {
+        "isLocked": true,
+        "isOpen": false
+      },
+      "events": {}
+    },
+    {
+      "id": "door2",
+      "type": "door",
+      "position": [
+        27,
+        11
+      ],
+      "rotation": 0,
+      "args": {
+        "isLocked": false,
+        "isOpen": false
+      },
+      "events": {}
+    },
+    {
+      "id": "door3",
+      "type": "door",
+      "position": [
+        39,
+        3
+      ],
+      "rotation": 0,
+      "args": {
+        "isLocked": false,
+        "isOpen": false
+      },
+      "events": {}
+    },
+    {
+      "id": "door4",
+      "type": "door",
+      "position": [
+        39,
+        22
+      ],
+      "rotation": 0,
+      "args": {
+        "isLocked": true,
+        "isOpen": false
+      },
+      "events": {}
+    },
+    {
+      "id": "door5",
+      "type": "door",
+      "position": [
+        15,
+        20
+      ],
+      "rotation": 0,
+      "args": {
+        "isLocked": true,
+        "isOpen": false
+      },
+      "events": {}
+    },
+    {
+      "id": "player1",
+      "type": "player",
+      "position": [
+        25,
+        12
+      ],
+      "rotation": 0,
+      "args": {},
+      "events": {}
+    }
+  ]
+}

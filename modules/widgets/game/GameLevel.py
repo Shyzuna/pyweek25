@@ -2,7 +2,7 @@
 Title: GameLevel
 Desc: Handle a level using a map name
 Creation: 17/04/18
-Last Mod: 17/04/18
+Last Mod: 18/04/18
 TODO:
     * Other place for convert ?
 """
@@ -10,9 +10,6 @@ TODO:
 import pygame
 
 import constants.colors as colors
-
-from modules.widgets.objects.PlayerObject import PlayerObject
-from modules.widgets.objects.ScrollWindow import ScrollWindow
 
 from modules.managers.MapManager import myMapManager
 from modules.managers.DisplayManager import myDisplayManager
@@ -30,24 +27,19 @@ class GameLevel(object):
             self._tilesData[key] = tile.convert()
         self._background = pygame.Surface(myDisplayManager.getSize())
         self._background.fill(colors.BLACK)
-        self._mapObject.setTileSet(self._tilesData, self._tileSize)
-        self._mapObject.setWalkingTiles(['0', '2'])
-
-        self._scrollWindow = ScrollWindow(self._mapObject)
-        self._mapObject.setScrollWindow(self._scrollWindow)
-        self._player = PlayerObject(self._mapObject, self._scrollWindow)
+        self._mapObject.loadCustom(self._tilesData, self._tileSize, ['0', '2'])
 
     def render(self, deltaTime):
         myDisplayManager.display(self._background, (0, 0))
         self._mapObject.render(deltaTime)
-        self._player.render(deltaTime)
-        self._scrollWindow.render(deltaTime)
 
     def update(self):
-        self._player.update(self._myGameManager.deltaTime)
+        self._mapObject.update(self._myGameManager.deltaTime)
 
     def refresh(self):
-        pass
+        self._background = pygame.Surface(myDisplayManager.getSize())
+        self._background.fill(colors.BLACK)
+        self._mapObject.refresh()
 
     def processEvent(self, event):
-        self._player.processEvent(event)
+        self._mapObject.processEvent(event)

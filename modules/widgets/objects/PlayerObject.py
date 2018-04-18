@@ -6,6 +6,7 @@ Last Mod: 17/04/18
 TODO:
     * check for passing delta time in update or adding mygamemanager ?
     * fix rotation
+    * Add control support like zdsq qwsd and click
 """
 
 # coding=utf-8
@@ -16,15 +17,21 @@ import settings.settings as settings
 
 import modules.tools.vectorTools as vectorTools
 
-from modules.managers.MapManager import myMapManager
+from modules.managers.ResourceManager import myResourceManager
 from modules.managers.DisplayManager import myDisplayManager
+from modules.managers.GuiManager import myGuiManager
 
 
 class PlayerObject(object):
-    def __init__(self, mapObject, scrollWindow):
-        self._playerSurface = pygame.image.load(os.path.join(settings.OBJECTS_PATH, 'player.png')).convert_alpha()
+    def __init__(self, mapObject, objId, position=(0, 0), rotation=0):
+        self._objId = objId
+        self._rotation = rotation
         self._mapObject = mapObject
-        self._position = (100, 100)
+        self._position = (position[0], position[1])
+        self._pixelPos = None
+        self._playerSurface = myResourceManager.lookFor('player', 'image',
+                                                        os.path.join(settings.OBJECTS_PATH, 'player.png'), True)
+        self._width, self._height = self._playerSurface.get_size()
         self._keyDirection = {
             pygame.K_DOWN: False,
             pygame.K_UP: False,
@@ -33,7 +40,19 @@ class PlayerObject(object):
         }
         self._speed = 20
         self._orientation = 0
-        self._scrollWindow = scrollWindow
+        self._interactableObject = None
+
+    def getPixelPosition(self):
+        return self._pixelPos
+
+    def getPixelCenterPosition(self):
+        return self._pixelPos[0] + self._width // 2, self._pixelPos[1] + self._height // 2
+
+    def setInteractableObject(self, obj):
+        self._interactableObject = obj
+
+    def init(self):
+        self._pixelPos = self._mapObject.mapToPixel(self._position[0], self._position[1])
 
     def render(self, deltaTime):
         surface = self._playerSurface
@@ -45,18 +64,19 @@ class PlayerObject(object):
             rect = newRect
         rect.left = self._position[0]
         rect.top = self._position[1]"""
-        myDisplayManager.display(surface, self._position)
+        myDisplayManager.display(surface, self._pixelPos)
+
 
     def computeOrientation(self):
         posX, posY = pygame.mouse.get_pos()
         middleX, middleY = self._playerSurface.get_rect().center
         vect1 = (0, -1)  # up vector
         vect2 = (posX - middleX, posY - middleY)  # mouse vector
-        self._orientation = vectorTools.angle(vect1, vect2) #* (-1 if posX > middleX else 1)
+        self._orientation = vectorTools.angle(vect1, vect2)
 
 
-    def update(self, deltaTime):
-        newX, newY = self._position
+    def update(self, deltaTime, scrollWindow):
+        newX, newY = self._pixelPos
         currentSpeed = deltaTime * self._speed / 100.0
         directionX = 0
         directionY = 0
@@ -73,12 +93,17 @@ class PlayerObject(object):
             rect.top = newY
             rect.left = newX
             if not self._mapObject.checkCollision(rect):
-                xScroll, yScroll = self._scrollWindow.checkScrolling(self._position[0], self._position[1],
+                xScroll, yScroll = scrollWindow.checkScrolling(self._pixelPos[0], self._pixelPos[1],
                                                                      (directionX, directionY))
-                self._position = (newX if not xScroll else self._position[0],
-                                  newY if not yScroll else self._position[1])
-
+                self._pixelPos = (newX if not xScroll else self._pixelPos[0],
+                                  newY if not yScroll else self._pixelPos[1])
         self.computeOrientation()
+
+        if self._interactableObject:
+            text = self._interactableObject.getInteractText(self)
+            myGuiManager.setTooltip(text)
+        else:
+            myGuiManager.setTooltip(None)
 
     def refresh(self):
         pass
@@ -86,3 +111,9 @@ class PlayerObject(object):
     def processEvent(self, event):
         if event.type in [pygame.KEYDOWN, pygame.KEYUP] and event.key in self._keyDirection.keys():
             self._keyDirection[event.key] = (event.type == pygame.KEYDOWN)
+        if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
+            if self._interactableObject:
+                self._interactableObject.interact(self)
+
+    def checkCollision(self, rect):
+        return False

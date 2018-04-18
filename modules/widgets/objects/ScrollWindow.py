@@ -2,11 +2,12 @@
 Title: ScrollWindow
 Desc: Define scrolling space for the player/map
 Creation: 17/04/18
-Last Mod: 17/04/18
+Last Mod: 18/04/18
 TODO:
 """
 # coding=utf-8
 import pygame
+import settings.settings as settings
 import constants.colors as colors
 from modules.managers.DisplayManager import myDisplayManager
 
@@ -16,9 +17,8 @@ class ScrollWindow(object):
         self._mapObject = mapObject
         self._offsetX = 0
         self._offsetY = 0
-        mapSize = mapObject.getPixelMapSize()
-        print(mapSize)
-        self._debug = True
+        self._debug = settings.DEBUG
+        mapSize = self._mapObject.getPixelMapSize()
         screenW, screenH = myDisplayManager.getSize()
         self._maxOffsetX, self._maxOffsetY = mapSize[0] - screenW, mapSize[1] - screenH
         self._width = 0.5 * screenW
@@ -70,7 +70,13 @@ class ScrollWindow(object):
         pass
 
     def refresh(self):
-        pass
+        mapSize = self._mapObject.getPixelMapSize()
+        screenW, screenH = myDisplayManager.getSize()
+        self._maxOffsetX, self._maxOffsetY = mapSize[0] - screenW, mapSize[1] - screenH
+        self._width = 0.5 * screenW
+        self._height = 0.5 * screenH
+        self._position = myDisplayManager.getCenterPosition((self._width, self._height))
+        self._background = pygame.Surface((screenW, screenH), pygame.SRCALPHA)
 
     def processEvent(self, event):
         pass
