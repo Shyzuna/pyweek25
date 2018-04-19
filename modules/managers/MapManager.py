@@ -15,6 +15,7 @@ import settings.settings as settings
 from modules.widgets.objects.MapObject import MapObject
 from modules.widgets.objects.DoorObject import DoorObject
 from modules.widgets.objects.PlayerObject import PlayerObject
+from modules.widgets.objects.CasualObject import CasualObject
 
 
 class MapManager(object):
@@ -67,6 +68,8 @@ class MapManager(object):
             return DoorObject(mapObject, obj['id'], obj['position'], obj['rotation'], **obj['args'])
         elif obj['type'] == 'player':
             return PlayerObject(mapObject, obj['id'], obj['position'], obj['rotation'])
+        elif obj['type'] in ['chair', 'desk']:
+            return CasualObject(mapObject, obj['id'], obj['type'], obj['position'], obj['rotation'], **obj['args'])
 
     def loadMap(self, name):
         currentMap = MapObject(name)

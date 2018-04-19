@@ -12,9 +12,11 @@ TODO:
 # coding=utf-8
 import pygame
 import modules.tools.vectorTools as vectorTools
+import constants.colors as colors
 from modules.managers.DisplayManager import myDisplayManager
 from modules.widgets.objects.ScrollWindow import ScrollWindow
 from modules.widgets.objects.PlayerObject import PlayerObject
+from modules.widgets.objects.SelectorObject import SelectorObject
 
 
 class MapObject(object):
@@ -31,37 +33,15 @@ class MapObject(object):
         self._scrollWindow = None
         self._ready = False
         self._player = None
-        self._proximityFactor = 1.5
-
-
-    def load(self, size, mapData, objects):
-        self._mapData = mapData
-        self._size = size
-        self._loaded = True
-        self._objects = objects
-        for elem in self._objects['objects']:
-            if type(elem) == PlayerObject:
-                self._player = elem
-                break
-
-    def loadCustom(self, tiles, tileSize, walkingTiles):
-        """
-        Load variable data
-        :param tiles:
-        :param tileSize:
-        :param walkingTiles:
-        :return:
-        """
-        self._tiles = tiles
-        self._tileSize = tileSize
-        self._walkingTiles = walkingTiles
-        self._scrollWindow = ScrollWindow(self)
-        for elem in self._objects['objects']:
-            elem.init()
-        self._ready = True
+        self._proximityFactor = 1.6
+        self._tacticalMode = False
+        self._tacticalGrid = None
+        self._selectorObject = None
 
     def refresh(self):
+        self._selectorObject.refresh()
         self._scrollWindow.refresh()
+        self.createGrid()
 
     def render(self, deltaTime):
         offsetX, offsetY = self._scrollWindow.getOffset()
@@ -78,15 +58,25 @@ class MapObject(object):
             positionL = -offsetX
             positionT += tileH
 
+        if self._tacticalMode:
+            self.displayGrid()
+
         for elem in self._objects['objects']:
             if type(elem) == PlayerObject:
                 elem.render(deltaTime)
             else:
                 elem.render(deltaTime, offsetX, offsetY)
 
+        self._selectorObject.render(deltaTime)
+
         self._scrollWindow.render(deltaTime)
 
     def processEvent(self, event):
+        if event.type == pygame.KEYUP and event.key == pygame.K_TAB:
+            self.toggleMode()
+
+        self._selectorObject.processEvent(event)
+
         for elem in self._objects['objects']:
             elem.processEvent(event)
 
@@ -97,11 +87,61 @@ class MapObject(object):
             else:
                 elem.update(deltaTime)
 
+        self._selectorObject.update(deltaTime)
         # call al time ?
-        self._player.setInteractableObject(self.closestInteractableElemTo(self._player, self._tileSize[0] * self._proximityFactor))
+        self._player.setInteractableObject(self.closestInteractableElemTo(self._player, self._tileSize[0] * self._proximityFactor, self._tileSize[0]))
 
+    def load(self, size, mapData, objects):
+        self._mapData = mapData
+        self._size = size
+        self._loaded = True
+        self._objects = objects
+        for elem in self._objects['objects']:
+            if type(elem) == PlayerObject:
+                self._player = elem
+                break
 
-    def closestInteractableElemTo(self, src, maxDst=None):
+    def createGrid(self):
+        xLine = pygame.Surface((1, self._size[1] * self._tileSize[1]))
+        xLine.fill(colors.GRAY)
+        yLine = pygame.Surface((self._size[0] * self._tileSize[0], 1))
+        yLine.fill(colors.GRAY)
+        self._tacticalGrid = [xLine, yLine]
+
+    def loadCustom(self, tiles, tileSize, walkingTiles):
+        """
+        Load variable data
+        :param tiles:
+        :param tileSize:
+        :param walkingTiles:
+        :return:
+        """
+        self._tiles = tiles
+        self._tileSize = tileSize
+        self._walkingTiles = walkingTiles
+        self._scrollWindow = ScrollWindow(self)
+        self._selectorObject = SelectorObject(self)
+        for elem in self._objects['objects']:
+            elem.init(self._tacticalMode)
+
+        self.createGrid()
+
+        self._ready = True
+
+    def toggleMode(self):
+        self._tacticalMode = not self._tacticalMode
+        for elem in self._objects['objects']:
+            elem.changeMode(self._tacticalMode)
+
+    def displayGrid(self):
+        offsetX, offsetY = self._scrollWindow.getOffset()
+        for x in range(self._size[0]):
+            myDisplayManager.display(self._tacticalGrid[0], (x * self._tileSize[0] - offsetX, - offsetY))
+
+        for y in range(self._size[1]):
+            myDisplayManager.display(self._tacticalGrid[1], (- offsetX, y * self._tileSize[1] - offsetY))
+
+    def closestInteractableElemTo(self, src, maxDst=None, minDst=None):
         # Modify for center to center ?
         closest = None
         bestValue = None
@@ -114,10 +154,22 @@ class MapObject(object):
                 elemPos = elem.getPixelCenterPosition()
                 dst = vectorTools.dist(srcPos, elemPos)
                 if maxDst and dst <= maxDst:
-                    if (bestValue and dst < bestValue) or not bestValue:
-                        bestValue = dst
-                        closest = elem
+                    if minDst and dst >= minDst:
+                        if (bestValue and dst < bestValue) or not bestValue:
+                            bestValue = dst
+                            closest = elem
         return closest
+
+    def isOnObject(self, x, y):
+        rect = pygame.Rect(x, y, self._tileSize[0], self._tileSize[1])
+        for elem in self._objects['objects']:
+            if elem.checkCollision(rect):
+                return elem
+        return None
+
+    def applyOffset(self, x, y, add=False):
+        offsetX, offsetY = self._scrollWindow.getOffset()
+        return x + (1 if add else -1) * offsetX, y + (1 if add else -1) * offsetY
 
     def pixelToMap(self, x, y):
         return int(x // self._tileSize[0]), int(y // self._tileSize[1])
@@ -128,7 +180,10 @@ class MapObject(object):
     def getPixelMapSize(self):
         return self._size[0] * self._tileSize[0], self._size[1] * self._tileSize[1]
 
-    def checkCollision(self, rect):
+    def getTileSize(self):
+        return self._tileSize
+
+    def checkCollision(self, rect, src):
         offsetX, offsetY = self._scrollWindow.getOffset()
         cornerList = [
             (rect.left, rect.top),
@@ -149,8 +204,9 @@ class MapObject(object):
         offsetRect = pygame.Rect(rect.left + offsetX, rect.top + offsetY, rect.width, rect.height)
 
         for elem in self._objects['objects']:
-            if elem.checkCollision(offsetRect):
-                return True
+            if elem != src:
+                if elem.checkCollision(offsetRect):
+                    return True
 
         return collide
 

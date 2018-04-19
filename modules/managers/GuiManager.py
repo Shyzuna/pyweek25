@@ -17,13 +17,16 @@ class GuiManager(object):
         self._fontList = {}
         self._managerList = None
         self._init = False
-        self._toolTipText = None
+        self._toolTipText = []
         self._toolTipPosition = None
+        self._selectorContent = []
+        self._selectorPosition = None
 
     def init(self, managerList):
         self._managerList = managerList
         screenW, screenH = self._managerList['Display'].getSize()
         self._toolTipPosition = (0.05 * screenW, 0.9 * screenH)
+        self._selectorPosition = (0.8 * screenW, 0.9 * screenH)
         self._init = True
 
     def loadFont(self, name, size, sysFont=True):
@@ -47,17 +50,38 @@ class GuiManager(object):
 
     def setTooltip(self, text):
         if text:
-            self._toolTipText = self.createText(text, 'Lucida Console', 20, colors.RED, False)
+            self._toolTipText.clear()
+            elems = text.split('|')
+            for elem in elems:
+                self._toolTipText.append(self.createText(elem, 'Lucida Console', 20, colors.RED, False))
         else:
-            self._toolTipText = None
+            self._toolTipText = []
+
+    def setSelectorContent(self, text):
+        if text:
+            self._selectorContent.clear()
+            elems = text.split('|')
+            for elem in elems:
+                self._selectorContent.append(self.createText(elem, 'Lucida Console', 20, colors.RED, False))
+        else:
+            self._selectorContent = []
 
     def refresh(self):
         screenW, screenH = self._managerList['Display'].getSize()
         self._toolTipPosition = (0.05 * screenW, 0.9 * screenH)
+        self._selectorPosition = (0.9 * screenW, 0.9 * screenH)
 
     def render(self, deltaTime):
-        if self._toolTipText:
-            self._managerList['Display'].display(self._toolTipText, self._toolTipPosition)
+        if len(self._toolTipText) > 0:
+            xPos, yPos = self._toolTipPosition
+            for text in self._toolTipText:
+                self._managerList['Display'].display(text, (xPos, yPos))
+                yPos += text.get_size()[1] + 5
+        if len(self._selectorContent) > 0:
+            xPos, yPos = self._selectorPosition
+            for text in self._selectorContent:
+                self._managerList['Display'].display(text, (xPos, yPos))
+                yPos += text.get_size()[1] + 5
 
 
 myGuiManager = GuiManager()

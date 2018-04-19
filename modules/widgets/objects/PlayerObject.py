@@ -41,6 +41,9 @@ class PlayerObject(object):
         self._speed = 20
         self._orientation = 0
         self._interactableObject = None
+        self._linkedObject = None
+        self._tacticalMode = None
+        self._rect = None
 
     def getPixelPosition(self):
         return self._pixelPos
@@ -51,8 +54,18 @@ class PlayerObject(object):
     def setInteractableObject(self, obj):
         self._interactableObject = obj
 
-    def init(self):
+    def changeMode(self, mode):
+        self._tacticalMode = mode
+        xPos, yPos = self._pixelPos
+        xReal, yReal = self._mapObject.applyOffset(xPos, yPos, True)
+        self._position = self._mapObject.pixelToMap(xReal, yReal)
+        newX, newY = self._mapObject.mapToPixel(self._position[0], self._position[1])
+        self._pixelPos = self._mapObject.applyOffset(newX, newY)
+
+    def init(self, mode):
         self._pixelPos = self._mapObject.mapToPixel(self._position[0], self._position[1])
+        self._rect = pygame.Rect(self._pixelPos[0], self._pixelPos[1], self._width, self._height)
+        self._tacticalMode = mode
 
     def render(self, deltaTime):
         surface = self._playerSurface
@@ -75,7 +88,7 @@ class PlayerObject(object):
         self._orientation = vectorTools.angle(vect1, vect2)
 
 
-    def update(self, deltaTime, scrollWindow):
+    def moveRealTime(self, deltaTime, scrollWindow):
         newX, newY = self._pixelPos
         currentSpeed = deltaTime * self._speed / 100.0
         directionX = 0
@@ -92,11 +105,19 @@ class PlayerObject(object):
             rect = self._playerSurface.get_rect()
             rect.top = newY
             rect.left = newX
-            if not self._mapObject.checkCollision(rect):
+            if not self._mapObject.checkCollision(rect, self):
                 xScroll, yScroll = scrollWindow.checkScrolling(self._pixelPos[0], self._pixelPos[1],
                                                                      (directionX, directionY))
                 self._pixelPos = (newX if not xScroll else self._pixelPos[0],
                                   newY if not yScroll else self._pixelPos[1])
+                self._rect = pygame.Rect(self._pixelPos[0], self._pixelPos[1], self._width, self._height)
+
+    def update(self, deltaTime, scrollWindow):
+        if not self._tacticalMode:
+            self.moveRealTime(deltaTime, scrollWindow)
+        else:
+            pass
+
         self.computeOrientation()
 
         if self._interactableObject:
@@ -111,9 +132,12 @@ class PlayerObject(object):
     def processEvent(self, event):
         if event.type in [pygame.KEYDOWN, pygame.KEYUP] and event.key in self._keyDirection.keys():
             self._keyDirection[event.key] = (event.type == pygame.KEYDOWN)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            if self._interactableObject and self._interactableObject.isMoovable():
+                self._linkedObject = self._interactableObject
         if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
             if self._interactableObject:
                 self._interactableObject.interact(self)
 
     def checkCollision(self, rect):
-        return False
+        return self._rect.colliderect(rect)

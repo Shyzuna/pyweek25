@@ -9,7 +9,7 @@
       ],
       "rotation": 90,
       "args": {
-        "isLocked": true,
+        "isLocked": false,
         "isOpen": false
       },
       "events": {}
@@ -51,7 +51,7 @@
       ],
       "rotation": 0,
       "args": {
-        "isLocked": true,
+        "isLocked": false,
         "isOpen": false
       },
       "events": {}
@@ -65,8 +65,22 @@
       ],
       "rotation": 0,
       "args": {
-        "isLocked": true,
+        "isLocked": false,
         "isOpen": false
+      },
+      "events": {}
+    },
+    {
+      "id": "chair1",
+      "type": "chair",
+      "position": [
+        8,
+        12
+      ],
+      "rotation": 0,
+      "args": {
+        "isMoovable": true,
+        "isCheckable": true
       },
       "events": {}
     },
@@ -81,5 +95,8 @@
       "args": {},
       "events": {}
     }
+  ],
+  "characters": [
+
   ]
 }

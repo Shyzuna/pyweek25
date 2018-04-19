@@ -1,6 +1,6 @@
 """
-Title: DoorObject
-Desc: Map object door 
+Title: CasualObject
+Desc: Map classic object
 Creation: 18/04/18
 Last Mod: 18/04/18
 TODO:
@@ -15,21 +15,25 @@ from modules.managers.LangManager import myLangManager
 from modules.widgets.objects.PlayerObject import PlayerObject
 
 
-class DoorObject(object):
-    def __init__(self, mapObject, objId, position=(0, 0), rotation=0, isLocked=False, isOpen=True):
+class CasualObject(object):
+    def __init__(self, mapObject, objId, objType, position=(0, 0), rotation=0,
+                 isLocked=False, isMoovable=False, isCheckable=False, checkedElement=None):
         self._objId = objId
+        self._objType = objType
         self._rotation = rotation
         self._mapObject = mapObject
         self._changed = False
         self._isLocked = isLocked
-        self._isOpen = isOpen
-        self._isInteractable = True
+        self._isMoovable = isMoovable
+        self._isCheckable = isCheckable
+        self._isInteractable = isMoovable or isCheckable
+        self._checkedElement = checkedElement
         self._position = (position[0], position[1])
         self._resources = {
-            'open': myResourceManager.lookFor('door_open', 'image',
-                                              os.path.join(settings.OBJECTS_PATH, 'door_open.png'), True),
-            'closed': myResourceManager.lookFor('door_closed', 'image',
-                                                os.path.join(settings.OBJECTS_PATH, 'door_closed.png'), True),
+            'chair': myResourceManager.lookFor('chair', 'image',
+                                              os.path.join(settings.OBJECTS_PATH, 'chair.png'), True),
+            'desk': myResourceManager.lookFor('desk', 'image',
+                                                os.path.join(settings.OBJECTS_PATH, 'desk.png'), True),
             'lock': myResourceManager.lookFor('lock', 'image',
                                               os.path.join(settings.OBJECTS_PATH, 'lock.png'), True),
         }
@@ -50,12 +54,15 @@ class DoorObject(object):
     def isInteractable(self):
         return self._isInteractable
 
+    def isMoovable(self):
+        return self._isMoovable
+
     def changeMode(self, mode):
         self._tacticalMode = mode
 
     def createSurface(self):
         self._pixelPos = self._mapObject.mapToPixel(self._position[0], self._position[1])
-        surface = self._resources['open'] if self._isOpen else self._resources['closed']
+        surface = self._resources[self._objType]
         if self._isLocked:
             surface = surface.copy()
             surface.blit(self._resources['lock'], (0, surface.get_size()[1] // 2))
@@ -78,9 +85,6 @@ class DoorObject(object):
             self._changed = False
             self.createSurface()
 
-    def isMoovable(self):
-        return False
-
     def refresh(self):
         pass
 
@@ -88,17 +92,17 @@ class DoorObject(object):
         pass
 
     def checkCollision(self, rect):
-        return False if self._isOpen else self._rect.colliderect(rect)
+        return self._rect.colliderect(rect)
 
     def getInteractText(self, src):
-        # TODO: check for key
-        label = 'interaction.'
-        label += 'locked_nokey' if self._isLocked else 'door_close' if self._isOpen else 'door_open'
-        return myLangManager.getLabel(label)
+        text = ''
+        if self._isCheckable:
+            text += myLangManager.getLabel('interaction.check_object')
+        if self._isMoovable:
+            if self._isCheckable:
+                text += '|'
+            text += myLangManager.getLabel('interaction.push_object')
+        return text
 
     def interact(self, src):
-        # TODO: check for key
-        if type(src) == PlayerObject:
-            if not self._isLocked:
-                self._isOpen = not self._isOpen
-                self.createSurface()
+        pass
