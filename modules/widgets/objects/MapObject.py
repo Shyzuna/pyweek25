@@ -160,10 +160,10 @@ class MapObject(object):
                             closest = elem
         return closest
 
-    def isOnObject(self, x, y):
+    def isOnObject(self, x, y, src):
         rect = pygame.Rect(x, y, self._tileSize[0], self._tileSize[1])
         for elem in self._objects['objects']:
-            if elem.checkCollision(rect):
+            if elem.checkCollision(rect, src):
                 return elem
         return None
 
@@ -184,6 +184,7 @@ class MapObject(object):
         return self._tileSize
 
     def checkCollision(self, rect, src):
+        # TODO care using offset here should be use on one side only
         offsetX, offsetY = self._scrollWindow.getOffset()
         cornerList = [
             (rect.left, rect.top),
@@ -205,7 +206,7 @@ class MapObject(object):
 
         for elem in self._objects['objects']:
             if elem != src:
-                if elem.checkCollision(offsetRect):
+                if elem.checkCollision(offsetRect, src):
                     return True
 
         return collide

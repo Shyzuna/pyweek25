@@ -65,7 +65,7 @@
       ],
       "rotation": 0,
       "args": {
-        "isLocked": false,
+        "isLocked": true,
         "isOpen": false
       },
       "events": {}
@@ -75,7 +75,21 @@
       "type": "chair",
       "position": [
         8,
-        12
+        13
+      ],
+      "rotation": 0,
+      "args": {
+        "isMoovable": true,
+        "isCheckable": true
+      },
+      "events": {}
+    },
+    {
+      "id": "desk1",
+      "type": "desk",
+      "position": [
+        7,
+        14
       ],
       "rotation": 0,
       "args": {

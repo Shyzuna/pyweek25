@@ -72,6 +72,8 @@ class CasualObject(object):
         self._surface = surface
         rect = surface.get_rect()
         self._rect = pygame.Rect(self._pixelPos[0], self._pixelPos[1], rect.width, rect.height)
+        self._height = rect.height
+        self._width = rect.width
 
     def init(self, mode):
         self._tacticalMode = mode
@@ -91,8 +93,14 @@ class CasualObject(object):
     def processEvent(self, event):
         pass
 
-    def checkCollision(self, rect):
+    def checkCollision(self, rect, src):
         return self._rect.colliderect(rect)
+
+    def getPosition(self):
+        return self._position
+
+    def getSize(self):
+        return self._width, self._height
 
     def getInteractText(self, src):
         text = ''
@@ -106,3 +114,9 @@ class CasualObject(object):
 
     def interact(self, src):
         pass
+
+    def getInfo(self):
+        info = myLangManager.getLabel('objects.' + self._objType)
+        if self._isLocked:
+            info = info + " " + myLangManager.getLabel('status.locked')
+        return info

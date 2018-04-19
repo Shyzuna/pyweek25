@@ -14,9 +14,17 @@
   "interaction": {
     "door_open": "Appuyer sur {ACTION_INTERACT} pour ouvrir la porte",
     "door_close": "Appuyer sur {ACTION_INTERACT} pour fermer la porte",
-    "locked_nokey": "Porte verouillée",
     "locked_key": "Appuyer sur {ACTION_INTERACT} pour déverouiller la porte",
     "push_object": "Garder {ACTION_INTERACT} enfoncée pour pousser l'object",
     "check_object": "Appuyer sur {ACTION_INTERACT} pour vérifier son contenu"
+  },
+  "status":{
+    "locked": "verouillé"
+  },
+  "objects": {
+    "door": "porte",
+    "chair": "chaise",
+    "desk": "bureau",
+    "player": "joueur"
   }
 }

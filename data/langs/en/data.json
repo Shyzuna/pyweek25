@@ -14,9 +14,17 @@
   "interaction": {
     "door_open": "Press {ACTION_INTERACT} to open the door",
     "door_close": "Press {ACTION_INTERACT} to close the door",
-    "locked_nokey": "Locked door",
     "locked_key": "Press {ACTION_INTERACT} to unlock the door",
     "push_object": "Keep {ACTION_INTERACT} pressed to push the object",
     "check_object": "Press {ACTION_INTERACT} to check the content"
+  },
+  "status":{
+    "locked": "locked"
+  },
+  "objects": {
+    "door": "door",
+    "chair": "chair",
+    "desk": "desk",
+    "player": "player"
   }
 }

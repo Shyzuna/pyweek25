@@ -65,6 +65,8 @@ class DoorObject(object):
         self._surface = surface
         rect = surface.get_rect()
         self._rect = pygame.Rect(self._pixelPos[0], self._pixelPos[1], rect.width, rect.height)
+        self._height = rect.height
+        self._width = rect.width
 
     def init(self, mode):
         self._tacticalMode = mode
@@ -78,6 +80,12 @@ class DoorObject(object):
             self._changed = False
             self.createSurface()
 
+    def getPosition(self):
+        return self._position
+
+    def getSize(self):
+        return self._width, self._height
+
     def isMoovable(self):
         return False
 
@@ -87,13 +95,13 @@ class DoorObject(object):
     def processEvent(self, event):
         pass
 
-    def checkCollision(self, rect):
-        return False if self._isOpen else self._rect.colliderect(rect)
+    def checkCollision(self, rect, src):
+        return False if self._isOpen and type(src) == PlayerObject else self._rect.colliderect(rect)
 
     def getInteractText(self, src):
         # TODO: check for key
         label = 'interaction.'
-        label += 'locked_nokey' if self._isLocked else 'door_close' if self._isOpen else 'door_open'
+        label += 'door_close' if self._isOpen else 'door_open'
         return myLangManager.getLabel(label)
 
     def interact(self, src):
@@ -102,3 +110,9 @@ class DoorObject(object):
             if not self._isLocked:
                 self._isOpen = not self._isOpen
                 self.createSurface()
+
+    def getInfo(self):
+        info = myLangManager.getLabel('objects.door')
+        if self._isLocked:
+            info = info + " " + myLangManager.getLabel('status.locked')
+        return info

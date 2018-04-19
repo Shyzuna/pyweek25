@@ -4,6 +4,7 @@ Desc: Display the menu and user interfaces elements
 Creation: 15/04/18
 Last Mod: 15/04/18
 TODO:
+    * regroup gui element for less functions
 """
 
 # coding=utf-8
@@ -21,12 +22,15 @@ class GuiManager(object):
         self._toolTipPosition = None
         self._selectorContent = []
         self._selectorPosition = None
+        self._selectedContent = []
+        self._selectedPosition = None
 
     def init(self, managerList):
         self._managerList = managerList
         screenW, screenH = self._managerList['Display'].getSize()
         self._toolTipPosition = (0.05 * screenW, 0.9 * screenH)
         self._selectorPosition = (0.8 * screenW, 0.9 * screenH)
+        self._selectedPosition = (0.05 * screenW, 0.05 * screenH)
         self._init = True
 
     def loadFont(self, name, size, sysFont=True):
@@ -66,10 +70,29 @@ class GuiManager(object):
         else:
             self._selectorContent = []
 
+    def setPersonSelectorContent(self, text, charInfo):
+        text += '|Hp: ' + str(charInfo['hp']) + '|Mp: ' + str(charInfo['mp'])
+        self.setSelectorContent(text)
+
+    def setSelectedContent(self, text):
+        if text:
+            self._selectedContent.clear()
+            elems = text.split('|')
+            for elem in elems:
+                self._selectedContent.append(self.createText(elem, 'Lucida Console', 20, colors.RED, False))
+        else:
+            self._selectedContent = []
+
+    def setPersonSelectedContent(self, text, charInfo):
+        text += '|Hp: ' + str(charInfo['hp']) + '|Mp: ' + str(charInfo['mp'])
+        self.setSelectedContent(text)
+
+
     def refresh(self):
         screenW, screenH = self._managerList['Display'].getSize()
         self._toolTipPosition = (0.05 * screenW, 0.9 * screenH)
         self._selectorPosition = (0.9 * screenW, 0.9 * screenH)
+        self._selectedPosition = (0.05 * screenW, 0.05 * screenH)
 
     def render(self, deltaTime):
         if len(self._toolTipText) > 0:
@@ -80,6 +103,11 @@ class GuiManager(object):
         if len(self._selectorContent) > 0:
             xPos, yPos = self._selectorPosition
             for text in self._selectorContent:
+                self._managerList['Display'].display(text, (xPos, yPos))
+                yPos += text.get_size()[1] + 5
+        if len(self._selectedContent) > 0:
+            xPos, yPos = self._selectedPosition
+            for text in self._selectedContent:
                 self._managerList['Display'].display(text, (xPos, yPos))
                 yPos += text.get_size()[1] + 5
 

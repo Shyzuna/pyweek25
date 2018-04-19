@@ -38,12 +38,19 @@ class PlayerObject(object):
             pygame.K_LEFT: False,
             pygame.K_RIGHT: False
         }
-        self._speed = 20
+        self._speed = 30
         self._orientation = 0
         self._interactableObject = None
         self._linkedObject = None
         self._tacticalMode = None
         self._rect = None
+        self._playerData = {
+            "hp": 50,
+            "mp": 20,
+            "consumable": [],
+            "spells": [],
+            "weapons": []
+        }
 
     def getPixelPosition(self):
         return self._pixelPos
@@ -107,10 +114,12 @@ class PlayerObject(object):
             rect.left = newX
             if not self._mapObject.checkCollision(rect, self):
                 xScroll, yScroll = scrollWindow.checkScrolling(self._pixelPos[0], self._pixelPos[1],
-                                                                     (directionX, directionY))
+                                                               (directionX, directionY))
                 self._pixelPos = (newX if not xScroll else self._pixelPos[0],
                                   newY if not yScroll else self._pixelPos[1])
                 self._rect = pygame.Rect(self._pixelPos[0], self._pixelPos[1], self._width, self._height)
+                xReal, yReal = self._mapObject.applyOffset(self._pixelPos[0], self._pixelPos[1], True)
+                self._position = self._mapObject.pixelToMap(xReal, yReal)
 
     def update(self, deltaTime, scrollWindow):
         if not self._tacticalMode:
@@ -139,5 +148,15 @@ class PlayerObject(object):
             if self._interactableObject:
                 self._interactableObject.interact(self)
 
-    def checkCollision(self, rect):
+    def checkCollision(self, rect, src):
+        rect.left, rect.top = self._mapObject.applyOffset(rect.left, rect.top)
         return self._rect.colliderect(rect)
+
+    def getInfo(self):
+        return self._playerData
+
+    def getPosition(self):
+        return self._position
+
+    def getSize(self):
+        return self._width, self._height
