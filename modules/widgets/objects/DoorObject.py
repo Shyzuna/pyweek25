@@ -13,6 +13,7 @@ from modules.managers.ResourceManager import myResourceManager
 from modules.managers.DisplayManager import myDisplayManager
 from modules.managers.LangManager import myLangManager
 from modules.widgets.objects.PlayerObject import PlayerObject
+from modules.widgets.objects.SelectorObject import SelectorObject
 
 
 class DoorObject(object):
@@ -21,6 +22,7 @@ class DoorObject(object):
         self._rotation = rotation
         self._mapObject = mapObject
         self._changed = False
+        self._selected = False
         self._isLocked = isLocked
         self._isOpen = isOpen
         self._isInteractable = True
@@ -40,6 +42,10 @@ class DoorObject(object):
         self._surface = None
         self._rect = None
         self._tacticalMode = None
+
+
+    def setSelected(self, selected):
+        self._selected = selected
 
     def getPixelPosition(self):
         return self._pixelPos
@@ -96,7 +102,10 @@ class DoorObject(object):
         pass
 
     def checkCollision(self, rect, src):
-        return False if self._isOpen and type(src) == PlayerObject else self._rect.colliderect(rect)
+        if src and type(src) == SelectorObject:
+            return self._rect.colliderect(rect)
+
+        return self._rect.colliderect(rect) if not self._isOpen else False
 
     def getInteractText(self, src):
         # TODO: check for key

@@ -17,7 +17,7 @@ class ScrollWindow(object):
         self._mapObject = mapObject
         self._offsetX = 0
         self._offsetY = 0
-        self._debug = False
+        self._debug = True
         mapSize = self._mapObject.getPixelMapSize()
         screenW, screenH = myDisplayManager.getSize()
         self._maxOffsetX, self._maxOffsetY = mapSize[0] - screenW, mapSize[1] - screenH

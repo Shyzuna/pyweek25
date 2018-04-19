@@ -66,7 +66,7 @@ class SelectorObject(object):
                     selectedSide = 3
 
         if selectedSide == 0:
-            pygame.draw.line(self._selectedSurface, colors.RED, (start, 0), (objW, 0), 4)
+            pygame.draw.line(self._selectedSurface, colors.RED, (start, 0), (objW, 0), 4)  # glitch here =D
             if end > objW:
                 delta = end - objW
                 pygame.draw.line(self._selectedSurface, colors.RED, (objW, 0), (objW, delta), 7)
@@ -101,9 +101,13 @@ class SelectorObject(object):
 
     def processEvent(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
-            btn1, btn2, btn3 = pygame.mouse.get_pressed()
-            self._selectedObject = self._onObject
             if self._selectedObject:
+                self._selectedObject.setSelected(False)
+
+            self._selectedObject = self._onObject
+
+            if self._selectedObject:
+                self._selectedObject.setSelected(True)
                 objW, objH = self._selectedObject.getSize()
                 self._selectedBorderSize = 2*objW + 2*objH
                 self._selectedCurrentSize = 0

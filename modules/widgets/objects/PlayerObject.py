@@ -15,6 +15,7 @@ import pygame
 import os
 import settings.settings as settings
 
+import constants.colors as colors
 import modules.tools.vectorTools as vectorTools
 
 from modules.managers.ResourceManager import myResourceManager
@@ -29,6 +30,7 @@ class PlayerObject(object):
         self._mapObject = mapObject
         self._position = (position[0], position[1])
         self._pixelPos = None
+        self._selected = False
         self._playerSurface = myResourceManager.lookFor('player', 'image',
                                                         os.path.join(settings.OBJECTS_PATH, 'player.png'), True)
         self._width, self._height = self._playerSurface.get_size()
@@ -47,10 +49,18 @@ class PlayerObject(object):
         self._playerData = {
             "hp": 50,
             "mp": 20,
+            "step": 5,
+            "action": 1,
             "consumable": [],
             "spells": [],
             "weapons": []
         }
+        self._accessibleCases = None
+        self._accessibleCasesSurface = None
+        self._accessibleCasesSurfacePosition = None
+
+    def setSelected(self, selected):
+        self._selected = selected
 
     def getPixelPosition(self):
         return self._pixelPos
@@ -61,6 +71,34 @@ class PlayerObject(object):
     def setInteractableObject(self, obj):
         self._interactableObject = obj
 
+    def selectionElementRender(self, deltaTime):
+        if self._tacticalMode:
+            myDisplayManager.display(self._accessibleCasesSurface, self._accessibleCasesSurfacePosition)
+
+    def createAccessibleCasesSurface(self):
+        ## TODO OFFSET & SCROLLING
+        tileW, tileH = self._mapObject.getTileSize()
+        self._accessibleCases = self._mapObject.accessibleCaseFromIn(self._position, self._playerData['step'])
+        self._accessibleCasesSurface = pygame.Surface((self._playerData['step'] * tileW * 3,
+                                                       self._playerData['step'] * tileH * 3), pygame.SRCALPHA)
+        self._accessibleCasesSurface.fill((0, 0, 0, 0))
+        self._accessibleCasesSurfacePosition = self._pixelPos[0] - (self._playerData['step'] * tileW),\
+                                               self._pixelPos[1] - (self._playerData['step'] * tileH)
+        factorX, factorY = self._position
+        factorX -= self._playerData['step']
+        factorY -= self._playerData['step']
+        print(self._accessibleCasesSurface)
+        print(self._position)
+        i = 0
+        for c in self._accessibleCases:
+            print(c)
+            x, y = c
+            i += 1
+            print(i)
+            rect = pygame.Rect((x - factorX) * tileW, (y - factorY) * tileH, tileW, tileH)
+            print(rect)
+            self._accessibleCasesSurface.fill(colors.GRAY, rect)
+
     def changeMode(self, mode):
         self._tacticalMode = mode
         xPos, yPos = self._pixelPos
@@ -68,6 +106,8 @@ class PlayerObject(object):
         self._position = self._mapObject.pixelToMap(xReal, yReal)
         newX, newY = self._mapObject.mapToPixel(self._position[0], self._position[1])
         self._pixelPos = self._mapObject.applyOffset(newX, newY)
+        if mode:
+            self.createAccessibleCasesSurface()
 
     def init(self, mode):
         self._pixelPos = self._mapObject.mapToPixel(self._position[0], self._position[1])
@@ -84,6 +124,8 @@ class PlayerObject(object):
             rect = newRect
         rect.left = self._position[0]
         rect.top = self._position[1]"""
+        if self._selected:
+            self.selectionElementRender(deltaTime)
         myDisplayManager.display(surface, self._pixelPos)
 
 
@@ -147,6 +189,18 @@ class PlayerObject(object):
         if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
             if self._interactableObject:
                 self._interactableObject.interact(self)
+        if event.type == pygame.MOUSEBUTTONUP:
+            if self._selected:
+                xMouse, yMouse = pygame.mouse.get_pos()
+                xReal, yReal = self._mapObject.applyOffset(xMouse, yMouse, True)
+                tile = self._mapObject.pixelToMap(xReal, yReal)
+                if tile in self._accessibleCases:
+                    ## TODO OFFSET & SCROLLING
+                    self._position = tile
+                    self._pixelPos = self._mapObject.mapToPixel(self._position[0], self._position[1])
+                    self._rect = pygame.Rect(self._pixelPos[0], self._pixelPos[1], self._width, self._height)
+                    self.createAccessibleCasesSurface()
+                    return True  # deny event
 
     def checkCollision(self, rect, src):
         rect.left, rect.top = self._mapObject.applyOffset(rect.left, rect.top)

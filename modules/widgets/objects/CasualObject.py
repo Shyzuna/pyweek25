@@ -22,6 +22,7 @@ class CasualObject(object):
         self._objType = objType
         self._rotation = rotation
         self._mapObject = mapObject
+        self._selected = False
         self._changed = False
         self._isLocked = isLocked
         self._isMoovable = isMoovable
@@ -44,6 +45,9 @@ class CasualObject(object):
         self._surface = None
         self._rect = None
         self._tacticalMode = None
+
+    def setSelected(self, selected):
+        self._selected = selected
 
     def getPixelPosition(self):
         return self._pixelPos

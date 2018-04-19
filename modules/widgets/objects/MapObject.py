@@ -58,27 +58,50 @@ class MapObject(object):
             positionL = -offsetX
             positionT += tileH
 
+        for elem in self._objects['objects']:
+            if type(elem) != PlayerObject:
+                elem.render(deltaTime, offsetX, offsetY)
+
+        self._player.render(deltaTime)
+        self._selectorObject.render(deltaTime)
+        self._scrollWindow.render(deltaTime)
+
         if self._tacticalMode:
             self.displayGrid()
 
-        for elem in self._objects['objects']:
-            if type(elem) == PlayerObject:
-                elem.render(deltaTime)
-            else:
-                elem.render(deltaTime, offsetX, offsetY)
+    def getAdjacentCase(self, case):
+        caseX, caseY = case
+        listCase = []
+        if caseX - 1 >= 0:
+            listCase.append((caseX - 1, caseY))
+        if caseY - 1 >= 0:
+            listCase.append((caseX, caseY - 1))
+        if caseX + 1 <= self._size[0]:
+            listCase.append((caseX + 1, caseY))
+        if caseX + 1 <= self._size[1]:
+            listCase.append((caseX, caseY + 1))
+        return listCase
 
-        self._selectorObject.render(deltaTime)
+    def accessibleCaseFromIn(self, case, distance):
+        caseList = [case]
+        if distance > 0:
+            for c in self.getAdjacentCase(case):
+                x, y = c
+                xReal, yReal = self.mapToPixel(x, y)
+                if self._mapData[y][x] in self._walkingTiles and self.isOnObject(xReal, yReal, None) is None:
+                    caseList += self.accessibleCaseFromIn(c, distance - 1)
 
-        self._scrollWindow.render(deltaTime)
+        return list(set(caseList))
 
     def processEvent(self, event):
         if event.type == pygame.KEYUP and event.key == pygame.K_TAB:
             self.toggleMode()
 
-        self._selectorObject.processEvent(event)
-
         for elem in self._objects['objects']:
-            elem.processEvent(event)
+            if elem.processEvent(event):
+                return
+
+        self._selectorObject.processEvent(event)
 
     def update(self, deltaTime):
         for elem in self._objects['objects']:
