@@ -36,7 +36,8 @@ class LangManager(object):
         """
         self._managerList = managerList
         self._dialogsList = [
-            'intro'
+            'intro',
+            'dialog1'
         ]
         self._currentLang = settings.DEFAULT_LANG
         self._langList = settings.LANG_LIST

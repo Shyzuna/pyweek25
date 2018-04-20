@@ -65,9 +65,10 @@ class GameManager(object):
 
         self._managerList['Display'].init(self._managerList)
         self._managerList['Resource'].init(self._managerList)
+        self._managerList['Lang'].init(self._managerList)
 
         for (name, manager) in self._managerList.items():
-            if name not in ['Game', 'Display', 'Resource']:
+            if name not in ['Game', 'Display', 'Resource', 'Lang']:
                 manager.init(self._managerList)
 
         self._scenes['mainMenu'] = MainMenu(self)
@@ -132,8 +133,9 @@ class GameManager(object):
         while self._running:
             self._clock.tick(settings.FPS)
             self.deltaTime = self._clock.get_time()
+            myGuiManager.update(self.deltaTime)
             self._scenes[self._currentScene].update()
-            myInputManager.handleEvents([self._scenes[self._currentScene].processEvent])
+            myInputManager.handleEvents([myGuiManager.processEvents, self._scenes[self._currentScene].processEvent])
             myDisplayManager.render([self._scenes[self._currentScene].render, myGuiManager.render, self.renderFps])
 
 

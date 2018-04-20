@@ -15,6 +15,7 @@ from modules.managers.DisplayManager import myDisplayManager
 from modules.managers.ResourceManager import myResourceManager
 from modules.managers.GuiManager import myGuiManager
 from modules.widgets.objects.PlayerObject import PlayerObject
+from modules.widgets.objects.EnemyObject import EnemyObject
 import settings.settings as settings
 import constants.colors as colors
 
@@ -117,7 +118,7 @@ class SelectorObject(object):
     def displayGuiContent(self):
         content = str(self._position[0]) + 'x' + str(self._position[1])
         if self._onObject:
-            if type(self._onObject) in [PlayerObject]:
+            if type(self._onObject) in [PlayerObject, EnemyObject]:
                 myGuiManager.setPersonSelectorContent(content, self._onObject.getInfo())
             else:
                 content += "|" + self._onObject.getInfo()
@@ -128,7 +129,7 @@ class SelectorObject(object):
         if self._selectedObject:
             objX, objY = self._selectedObject.getPosition()
             content = str(objX) + 'x' + str(objY)
-            if type(self._selectedObject) in [PlayerObject]:
+            if type(self._selectedObject) in [PlayerObject, EnemyObject]:
                 myGuiManager.setPersonSelectedContent(content, self._selectedObject.getInfo())
             else:
                 content += "|" + self._selectedObject.getInfo()

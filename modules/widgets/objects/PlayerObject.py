@@ -97,7 +97,7 @@ class PlayerObject(object):
             print(i)
             rect = pygame.Rect((x - factorX) * tileW, (y - factorY) * tileH, tileW, tileH)
             print(rect)
-            self._accessibleCasesSurface.fill(colors.GRAY, rect)
+            self._accessibleCasesSurface.fill(colors.LIGHT_GREY, rect)
 
     def changeMode(self, mode):
         self._tacticalMode = mode

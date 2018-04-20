@@ -89,5 +89,8 @@ class DisplayManager(object):
             # center inside screen
             return ((self.getSize()[0] - subElemSizes[0]) / 2.0), ((self.getSize()[1] - subElemSizes[1]) / 2.0)
 
+    def getResolutionNumber(self):
+        return self._currentResolution
+
 
 myDisplayManager = DisplayManager()

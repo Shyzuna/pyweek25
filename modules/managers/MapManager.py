@@ -15,6 +15,7 @@ import settings.settings as settings
 from modules.widgets.objects.MapObject import MapObject
 from modules.widgets.objects.DoorObject import DoorObject
 from modules.widgets.objects.PlayerObject import PlayerObject
+from modules.widgets.objects.EnemyObject import EnemyObject
 from modules.widgets.objects.CasualObject import CasualObject
 
 
@@ -66,10 +67,14 @@ class MapManager(object):
     def createObject(self, obj, mapObject):
         if obj['type'] == 'door':
             return DoorObject(mapObject, obj['id'], obj['position'], obj['rotation'], **obj['args'])
-        elif obj['type'] == 'player':
-            return PlayerObject(mapObject, obj['id'], obj['position'], obj['rotation'])
         elif obj['type'] in ['chair', 'desk']:
             return CasualObject(mapObject, obj['id'], obj['type'], obj['position'], obj['rotation'], **obj['args'])
+
+    def createCharacter(self, obj, mapObject):
+        if obj['type'] == 'player':
+            return PlayerObject(mapObject, obj['id'], obj['position'], obj['rotation'])
+        elif obj['type'] == 'enemy':
+            return EnemyObject(mapObject, obj['id'], obj['position'], obj['rotation'])
 
     def loadMap(self, name):
         currentMap = MapObject(name)
@@ -101,8 +106,11 @@ class MapManager(object):
                 data = file.read().decode('utf-8')
                 jsonObject = json.loads(data)
                 currentObject['objects'] = []
+                currentObject['characters'] = []
                 for elem in jsonObject['objects']:
                     currentObject['objects'].append(self.createObject(elem, currentMap))
+                for elem in jsonObject['characters']:
+                    currentObject['characters'].append(self.createCharacter(elem, currentMap))
 
             currentMap.load((maxWidth, height), mapData, currentObject)
             self._mapObjects[name] = currentMap

@@ -1,0 +1,12 @@
+{
+  "dialogs": [
+    "Hello",
+    "Nice to meet you !",
+    "How are you today ? isn't the weather great ?",
+    "Yeah it's so sunny ! moreover so HOT\nWe should go to the pool don't you think so ?",
+    "Pool seems a great idea, let's at 2PM !"
+  ],
+  "speakers": [
+    "John", "Will", "John", "Will", "John"
+  ]
+}

@@ -40,6 +40,9 @@ class GameLevel(object):
         self._background = pygame.Surface(myDisplayManager.getSize())
         self._background.fill(colors.BLACK)
         self._mapObject.refresh()
+        myGuiManager.toggleGui()
 
     def processEvent(self, event):
+        if event.type == pygame.KEYUP and event.key == pygame.K_0:
+            myGuiManager.toggleGui()
         self._mapObject.processEvent(event)

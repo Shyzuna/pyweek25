@@ -51,7 +51,7 @@
       ],
       "rotation": 0,
       "args": {
-        "isLocked": false,
+        "isLocked": true,
         "isOpen": false
       },
       "events": {}
@@ -97,7 +97,9 @@
         "isCheckable": true
       },
       "events": {}
-    },
+    }
+  ],
+  "characters": [
     {
       "id": "player1",
       "type": "player",
@@ -108,9 +110,17 @@
       "rotation": 0,
       "args": {},
       "events": {}
+    },
+    {
+      "id": "enemy1",
+      "type": "enemy",
+      "position": [
+        35,
+        15
+      ],
+      "rotation": 0,
+      "args": {},
+      "events": {}
     }
-  ],
-  "characters": [
-
   ]
 }

@@ -28,6 +28,7 @@ DIALOGS_PATH = os.path.join('data', 'dialogs')
 MAPS_PATH = os.path.join('data', 'maps')
 TILES_PATH = os.path.join(IMAGE_PATH, 'tiles')
 OBJECTS_PATH = os.path.join(IMAGE_PATH, 'objects')
+FONT_PATH= os.path.join('data', 'fonts')
 
 # Lang
 DEFAULT_LANG = 'en'

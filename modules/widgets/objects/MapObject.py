@@ -58,16 +58,20 @@ class MapObject(object):
             positionL = -offsetX
             positionT += tileH
 
-        for elem in self._objects['objects']:
+        self._player.render(deltaTime)
+        for elem in self._objects['characters']:
             if type(elem) != PlayerObject:
                 elem.render(deltaTime, offsetX, offsetY)
 
-        self._player.render(deltaTime)
+        if self._tacticalMode:
+            self.displayGrid()
+
+        for elem in self._objects['objects']:
+            elem.render(deltaTime, offsetX, offsetY)
+
         self._selectorObject.render(deltaTime)
         self._scrollWindow.render(deltaTime)
 
-        if self._tacticalMode:
-            self.displayGrid()
 
     def getAdjacentCase(self, case):
         caseX, caseY = case
@@ -97,14 +101,14 @@ class MapObject(object):
         if event.type == pygame.KEYUP and event.key == pygame.K_TAB:
             self.toggleMode()
 
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             if elem.processEvent(event):
                 return
 
         self._selectorObject.processEvent(event)
 
     def update(self, deltaTime):
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             if type(elem) == PlayerObject:
                 elem.update(deltaTime, self._scrollWindow)
             else:
@@ -119,7 +123,7 @@ class MapObject(object):
         self._size = size
         self._loaded = True
         self._objects = objects
-        for elem in self._objects['objects']:
+        for elem in self._objects['characters']:
             if type(elem) == PlayerObject:
                 self._player = elem
                 break
@@ -144,7 +148,7 @@ class MapObject(object):
         self._walkingTiles = walkingTiles
         self._scrollWindow = ScrollWindow(self)
         self._selectorObject = SelectorObject(self)
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             elem.init(self._tacticalMode)
 
         self.createGrid()
@@ -153,7 +157,7 @@ class MapObject(object):
 
     def toggleMode(self):
         self._tacticalMode = not self._tacticalMode
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             elem.changeMode(self._tacticalMode)
 
     def displayGrid(self):
@@ -172,7 +176,7 @@ class MapObject(object):
         if src == self._player:
             offsetX, offsetY = self._scrollWindow.getOffset()
             srcPos = (srcPos[0] + offsetX, srcPos[1] + offsetY)
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             if elem != src and elem.isInteractable():
                 elemPos = elem.getPixelCenterPosition()
                 dst = vectorTools.dist(srcPos, elemPos)
@@ -185,7 +189,7 @@ class MapObject(object):
 
     def isOnObject(self, x, y, src):
         rect = pygame.Rect(x, y, self._tileSize[0], self._tileSize[1])
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             if elem.checkCollision(rect, src):
                 return elem
         return None
@@ -227,7 +231,7 @@ class MapObject(object):
 
         offsetRect = pygame.Rect(rect.left + offsetX, rect.top + offsetY, rect.width, rect.height)
 
-        for elem in self._objects['objects']:
+        for elem in self._objects['objects'] + self._objects['characters']:
             if elem != src:
                 if elem.checkCollision(offsetRect, src):
                     return True

@@ -1,0 +1,12 @@
+{
+  "dialogs": [
+    "Salut",
+    "Content de te rencontrer",
+    "Comment vas-tu aujourd'hui ?\nIl fait beau nan ?",
+    "Clairement il fait trop beau !\nNous devrions aller à la piscine, qu'en penses-tu ?",
+    "Carrément rendez-vous à 14h là-bas !"
+  ],
+  "speakers": [
+    "John", "Will", "John", "Will", "John"
+  ]
+}

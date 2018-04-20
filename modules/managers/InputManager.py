@@ -27,8 +27,11 @@ class InputManager(object):
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     self._managerList['Game'].stop()
+                elif event.key == pygame.K_BACKSPACE:
+                    self._managerList['Game'].previousScene()
             for eventHandler in eventHandlers:
-                eventHandler(event)
+                if eventHandler(event):
+                    return
 
 
 myInputManager = InputManager()
